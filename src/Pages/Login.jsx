@@ -5,6 +5,7 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../api/firebase";
 
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -16,7 +17,7 @@ function Login() {
   const handleLogin = async () => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
-
+      toast.success("Logged in successfully");
       navigate("/dashboard");
     } catch (error) {
       console.log(error.message);

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { signOut } from "firebase/auth";
+import toast from "react-hot-toast";
 import {
   collection,
   addDoc,
@@ -12,6 +13,7 @@ import {
 } from "firebase/firestore";
 
 import { useNavigate } from "react-router-dom";
+import { onAuthStateChanged } from "firebase/auth";
 
 import { auth, db } from "../api/firebase";
 
@@ -20,15 +22,15 @@ function Dashboard() {
   const [task, setTask] = useState("");
 
   const [tasks, setTasks] = useState([]);
-
+  const [loading, setLoading] = useState(false);
   const [editId, setEditId] = useState(null);
 
-  // ✅ LOGOUT
+  // LOGOUT
   const handleLogout = async () => {
     try {
       await signOut(auth);
 
-      alert("Logged out successfully");
+      toast.success("Logged out successfully");
 
       navigate("/");
     } catch (error) {
@@ -36,31 +38,55 @@ function Dashboard() {
     }
   };
 
-  // ✅ CREATE TASK
+  // CREATE TASK
   const addTask = async () => {
-    if (!task) return;
+    if (!task) {
+      toast.error("Task cannot be empty");
+
+      return;
+    }
+
+    setLoading(true);
 
     try {
+      const user = auth.currentUser;
+
+      if (!user) {
+        toast.error("Not authenticated");
+        navigate("/");
+        return;
+      }
+
       await addDoc(collection(db, "tasks"), {
         title: task,
-        uid: auth.currentUser.uid,
+
+        uid: user.uid,
       });
+
+      toast.success("Task Added");
 
       setTask("");
 
       fetchTasks();
     } catch (error) {
       console.log(error);
+
+      toast.error("Something went wrong");
     }
+
+    setLoading(false);
   };
 
-  // ✅ READ TASKS
+  // READ TASKS
   const fetchTasks = async () => {
-    const q = query(
-      collection(db, "tasks"),
+    const user = auth.currentUser;
 
-      where("uid", "==", auth.currentUser.uid),
-    );
+    if (!user) {
+      setTasks([]);
+      return;
+    }
+
+    const q = query(collection(db, "tasks"), where("uid", "==", user.uid));
 
     const querySnapshot = await getDocs(q);
 
@@ -72,15 +98,18 @@ function Dashboard() {
     setTasks(taskList);
   };
 
-  // ✅ DELETE TASK
+  // DELETE TASK
   const deleteTask = async (id) => {
     await deleteDoc(doc(db, "tasks", id));
 
+    toast.success("Task deleted successfully");
     fetchTasks();
   };
 
-  // ✅ UPDATE TASK
+  // UPDATE TASK
   const updateTask = async () => {
+    setLoading(true);
+
     await updateDoc(doc(db, "tasks", editId), {
       title: task,
     });
@@ -89,16 +118,27 @@ function Dashboard() {
 
     setEditId(null);
 
+    toast.success("Task updated successfully");
     fetchTasks();
+    setLoading(false);
   };
 
   useEffect(() => {
-    fetchTasks();
+    // Re-run fetch when auth state changes (user signed in/out)
+    const unsub = onAuthStateChanged(auth, (u) => {
+      if (u) fetchTasks();
+      else setTasks([]);
+    });
+
+    // Initial attempt (in case user is already available)
+    if (auth.currentUser) fetchTasks();
+
+    return () => unsub();
   }, []);
 
   return (
     <>
-      <h1>Task Dashboard</h1>
+      <h1 className="text-8xl "> Task Dashboard</h1>
       {/* ✅ LOGOUT BUTTON */}
       <button onClick={handleLogout}>Logout</button>
 
@@ -111,9 +151,13 @@ function Dashboard() {
       />
 
       {editId ? (
-        <button onClick={updateTask}>Update Task</button>
+        <button onClick={updateTask} disabled={loading}>
+          {loading ? "Updating..." : "Update Task"}
+        </button>
       ) : (
-        <button onClick={addTask}>Add Task</button>
+        <button onClick={addTask} disabled={loading}>
+          {loading ? "Adding..." : "Add Task"}
+        </button>
       )}
 
       <hr />
@@ -131,7 +175,7 @@ function Dashboard() {
           >
             Edit
           </button>
-
+          <p>{loading ? "Loading..." : ""}</p>
           <button onClick={() => deleteTask(item.id)}>Delete</button>
         </div>
       ))}
