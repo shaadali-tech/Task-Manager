@@ -40,53 +40,60 @@ function Register() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white rounded-lg shadow-xl p-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-2 text-center">
-          Create Account
-        </h1>
-        <p className="text-gray-600 text-center mb-8">Sign up to get started</p>
+    <div className="auth-container gradient-green">
+      <div className="auth-card">
+        <h1>Create Account</h1>
+        <p>Sign up to get started</p>
 
-        <div className="space-y-5">
-          <input
-            type="email"
-            placeholder="Email address"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
-          />
+        <div className="form-group">
+          <div>
+            <label>Email Address</label>
+            <input
+              type="email"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
 
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
-          />
+          <div>
+            <label>Password</label>
+            <input
+              type="password"
+              placeholder="Min 6 characters"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
 
-          <input
-            type="password"
-            placeholder="Confirm Password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
-          />
+          <div>
+            <label>Confirm Password</label>
+            <input
+              type="password"
+              placeholder="Re-enter your password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+          </div>
 
           <button
             onClick={handleRegister}
             disabled={loading}
-            className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-semibold py-3 rounded-lg transition duration-200 mt-6"
+            className="btn btn-primary"
+            style={{
+              background: loading
+                ? "#9ca3af"
+                : "linear-gradient(to right, #16a34a, #15803d)",
+            }}
           >
             {loading ? "Creating account..." : "Register"}
           </button>
         </div>
 
-        <p className="text-gray-600 text-center mt-6">
+        <div className="divider"></div>
+        <p className="auth-footer">
           Already have an account?{" "}
-          <Link
-            to="/"
-            className="text-green-600 hover:text-green-700 font-semibold"
-          >
+          <Link to="/" style={{ color: "#16a34a" }}>
             Sign in here
           </Link>
         </p>

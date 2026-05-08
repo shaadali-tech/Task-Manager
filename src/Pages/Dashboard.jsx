@@ -137,45 +137,41 @@ function Dashboard() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
-      {/* Header */}
-      <div className="max-w-4xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-4xl font-bold text-gray-800">Task Dashboard</h1>
-          <button
-            onClick={handleLogout}
-            className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200"
-          >
+    <div className="dashboard-container">
+      <div className="dashboard-max-width">
+        {/* Header */}
+        <div className="dashboard-header">
+          <div>
+            <h1>Task Dashboard</h1>
+            <p>Manage your tasks efficiently</p>
+          </div>
+          <button onClick={handleLogout} className="btn-logout">
             Logout
           </button>
         </div>
 
         {/* Add Task Section */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-          <div className="flex gap-3">
+        <div className="add-task-section">
+          <label>Add New Task</label>
+          <div className="task-input-group">
             <input
               type="text"
-              placeholder="Add a new task..."
+              placeholder="What needs to be done?"
               value={task}
               onChange={(e) => setTask(e.target.value)}
               onKeyPress={(e) => e.key === "Enter" && !editId && addTask()}
-              className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
             />
 
             {editId ? (
               <button
                 onClick={updateTask}
                 disabled={loading}
-                className="bg-yellow-500 hover:bg-yellow-600 disabled:bg-gray-400 text-white font-semibold py-3 px-6 rounded-lg transition duration-200"
+                className="btn-update"
               >
-                {loading ? "Updating..." : "Update"}
+                {loading ? "Updating..." : "Update Task"}
               </button>
             ) : (
-              <button
-                onClick={addTask}
-                disabled={loading}
-                className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-semibold py-3 px-6 rounded-lg transition duration-200"
-              >
+              <button onClick={addTask} disabled={loading} className="btn-add">
                 {loading ? "Adding..." : "Add Task"}
               </button>
             )}
@@ -183,42 +179,42 @@ function Dashboard() {
         </div>
 
         {/* Task List */}
-        <div className="space-y-4">
+        <div className="task-list">
           {tasks.length === 0 ? (
-            <div className="bg-white rounded-lg shadow-md p-8 text-center">
-              <p className="text-gray-500 text-lg">
-                No tasks yet. Create one to get started!
-              </p>
+            <div className="empty-state">
+              <div className="empty-state-icon">📝</div>
+              <p>No tasks yet. Create one to get started!</p>
             </div>
           ) : (
-            tasks.map((item) => (
-              <div
-                key={item.id}
-                className="bg-white rounded-lg shadow-md p-4 flex items-center justify-between hover:shadow-lg transition duration-200"
-              >
-                <h3 className="text-lg font-semibold text-gray-800 flex-1">
-                  {item.title}
-                </h3>
+            <>
+              <p className="task-counter">
+                {tasks.length} {tasks.length === 1 ? "task" : "tasks"} to
+                complete
+              </p>
+              {tasks.map((item) => (
+                <div key={item.id} className="task-item">
+                  <h3>{item.title}</h3>
 
-                <div className="flex gap-3">
-                  <button
-                    onClick={() => {
-                      setTask(item.title);
-                      setEditId(item.id);
-                    }}
-                    className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-200"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => deleteTask(item.id)}
-                    className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-200"
-                  >
-                    Delete
-                  </button>
+                  <div className="task-actions">
+                    <button
+                      onClick={() => {
+                        setTask(item.title);
+                        setEditId(item.id);
+                      }}
+                      className="btn-edit"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => deleteTask(item.id)}
+                      className="btn-delete"
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))
+              ))}
+            </>
           )}
         </div>
       </div>
