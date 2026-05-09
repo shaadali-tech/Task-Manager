@@ -85,6 +85,18 @@ function Login() {
           onClick={handleGoogleLogin}
           disabled={loading}
           className="btn btn-secondary"
+          style={{
+            marginTop: "12px",
+            backgroundColor: "#ffffff",
+            padding: "10px 20px",
+            marginLeft: "110px",
+            hover: {
+              backgroundColor: "#f3f4f6",
+            },
+            color: "#1f2937",
+            border: "1px solid #d1d5db",
+            boxShadow: "0 2px 6px rgba(0, 0, 0, 0.08)",
+          }}
         >
           Google Login
         </button>
