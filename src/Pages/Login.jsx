@@ -1,8 +1,9 @@
 import { useState } from "react";
 
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithPopup } from "firebase/auth";
 
-import { auth } from "../api/firebase";
+import { auth, googleProvider } from "../api/firebase";
 
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -15,6 +16,20 @@ function Login() {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+
+  const handleGoogleLogin = async () => {
+    try {
+      setLoading(true);
+      await signInWithPopup(auth, googleProvider);
+      toast.success("Logged in with Google successfully");
+      navigate("/dashboard");
+    } catch (error) {
+      console.log(error.message);
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleLogin = async () => {
     try {
@@ -65,6 +80,14 @@ function Login() {
             {loading ? "Signing in..." : "Sign In"}
           </button>
         </div>
+
+        <button
+          onClick={handleGoogleLogin}
+          disabled={loading}
+          className="btn btn-secondary"
+        >
+          Google Login
+        </button>
 
         <div className="divider"></div>
         <p className="auth-footer">
